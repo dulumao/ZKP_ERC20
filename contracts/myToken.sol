@@ -16,39 +16,10 @@ contract myToken is ERC20 {
     constructor() public ERC20(_name,_symbol,_decimals){
     _mint(msg.sender, _INITIAL_SUPPLY);
     }
-    // // sender:
-    // // w = (startingBalance, TxValue)
-    // // x = (hash(StartingBalance),hash(EndingBalance),hash(TxValue))
-    // //PrivateInputSender
-    // struct PrInputS {
-    //     uint256 senderBalanceBefore;
-    //     uint256 value;
-    // }
-    // //PublicInputSender
-    // struct  PubInputS {
-    //     bytes32 hashValue;
-    //     bytes32 hashSenderBalanceBefore;
-    //     bytes32 hashSenderBalanceAfter;
-    // }
-    // function toBytes(uint256 x) internal pure returns (bytes memory b) {
-    //     b = new bytes(32);
-    //     for (uint i = 0; i < 32; i++) {
-    //         b[i] = byte(uint8(x / (2**(8*(31 - i)))));
-    //     }
-    // }
-    // //PrivateInputReceiver
-    // struct PrInputR {
-    //     uint256 receiverBalanceBefore;
-    //     uint256 value;
-    // }
-    // //PublicInputReceiver
-    // struct  PubInputR {
-    //     bytes32 hashValue;
-    //     bytes32 hashReceiverBalanceBefore;
-    //     bytes32 hashReceiverBalanceAfter;
-    // }
 
 
+    // IL FAUT APPELER LES FONCTIONS DU CONTRAT VERIFIER.SOL
+    
     // function transfer(address _to, bytes32 hashValue, bytes32 hashSenderBalanceAfter, bytes32 hashReceiverBalanceAfter,
     //     bytes zkProofSender, bytes zkProofReceiver) public
     // {
