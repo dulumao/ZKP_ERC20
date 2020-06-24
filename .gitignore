@@ -3,7 +3,8 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=linux,node
 
 
-
+# build/contract folder
+build/contracts/
 
 ### Linux ###
 *~
