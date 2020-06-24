@@ -59,7 +59,7 @@ template SenderFunction(){
 
 template ReceiverFunction(){
 
-    //Entrees, valeur du transfert et solde de l'envoyeur
+    //Entrees, valeur du transfert et solde du receveur
     signal private input startingBalance;
     signal private input value;
     //sortie hash(balance, valeur, balance après transfert)
