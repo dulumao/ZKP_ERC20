@@ -14,8 +14,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@truffle/hdwallet-provider": "^1.0.35",
     "circom": "^0.5.11",
+    "ethers": "^5.0.2",
     "openzeppelin-solidity": "3.0.2",
-    "snarkjs": "^0.1.31"
+    "snarkjs": "^0.1.31",
+    "web3": "^1.2.9"
   }
 }
