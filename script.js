@@ -488,48 +488,50 @@ function generatecall(proofName, publicName) {
 
 
 var vSender  = generatecall("./circuitSender/proof.json","./circuitSender/public.json");
-// var vReceiver = generatecall("./circuitReceiver/proof.json","./circuitReceiver/public.json");
+var vReceiver = generatecall("./circuitReceiver/proof.json","./circuitReceiver/public.json");
 
-async function interactWContract(){
-    contract.name().then(res => console.log(res));
-    // await contract.setAddressVerif(addressVerifier).then(tx => console.log(tx));
-    contract.totalSupply().then(res => console.log(ethers.utils.formatUnits(res,0)));
-    // contract.getAddressVerif().then(res => console.log(res))
-    await contract.transferConfidentiel(vSender,vReceiver).then(res => console.log(res));
-   
-}
+
 var tmp = [["0x02063a81fb6c8269ab6175f0cda21da7126186336e4ccb9212bea2a7f91f124f", "0x2738baee46bd09ca0d1a731da5798f8429d0b32f9880553ccad68b7996d1e82a"],[["0x25d4b24ad5306aaabad209f86e59c70ad6f9aa394a2d19dd9bbf0a77b1076f49", "0x1bbd87820d15e15782917bdad10ccf3253562a2a3e064f021ba1526e3697aad0"],["0x025cae085ca5a62dff7101afb55041f5fc83e4d177f6ded46b6c2564d6c4e37e", "0x12372b7d5757c26871e202b82a57c12dc45c6bcd8f4d03986b0ac00c1ca30c14"]],["0x21f16692f1d7560b221934076b4d9c504b436ccd9a61bc6ae07fd165157624fa", "0x13c41cd1c18fee688a9bb7b471121717b17bc7cf8d7d5ab5560b3592614a0741"],["0x06c21403ae2da0469f41827322f010fb3bcbdd888f004a70f6b0edb19b96fcd9"]];
 function removeElts(str) {
 	str = str.slice(1);
 	str = str.slice(0,str.length-1);
 	return str;
 }
-
-// vSender[0][0] = removeElts(vSender[0][0]);
-// console.log(vSender);
-for (var i = 0, c = vSender.length;i < c; i++){
-	for(var j = 0; j < vSender[i]; j++){
-		console.log(i,j);
-		// vSender[i][j] = removeElts(vSender[i][j]);
+var len = vSender.length;
+for( var i =0; i< len; i++){
+	for( var j =0, c = vSender[i].length;j < c; j++){
+		if(i == 1){
+			for (var k=0, d = vSender[i][j].length;k<d;k++){
+				vSender[i][j][k] = removeElts(vSender[i][j][k]);
+			}
+		}
+		else {
+			vSender[i][j] = removeElts(vSender[i][j]);
+		}
 	}
 }
-// console.log(vSender[0].length);
-// console.log(tmp);
-// console.log();
-// console.log(vSender);
-// console.log();
-// // vSender[0][0][67] = "";
-// console.log(tmp[0][0]);
-// console.log(removeElts(vSender[0][0]));
-// tset.push(vSender);
-// console.log();
-// console.log(tset);
+len = vReceiver.length;
+for( var i =0; i< len; i++){
+	for( var j =0, c = vReceiver[i].length;j < c; j++){
+		if(i == 1){
+			for (var k=0, d = vReceiver[i][j].length;k<d;k++){
+				vReceiver[i][j][k] = removeElts(vReceiver[i][j][k]);
+			}
+		}
+		else {
+			vReceiver[i][j] = removeElts(vReceiver[i][j]);
+		}
+	}
+}
+async function setVerifier(){
+	await contract.setAddressVerif(addressVerifier).then(tx => console.log(tx));
+}
 
-// tset.push(vSender);
-// tset.push(["0x02063a81fb6c8269ab6175f0cda21da7126186336e4ccb9212bea2a7f91f124f", "0x2738baee46bd09ca0d1a731da5798f8429d0b32f9880553ccad68b7996d1e82a"],[["0x25d4b24ad5306aaabad209f86e59c70ad6f9aa394a2d19dd9bbf0a77b1076f49", "0x1bbd87820d15e15782917bdad10ccf3253562a2a3e064f021ba1526e3697aad0"],["0x025cae085ca5a62dff7101afb55041f5fc83e4d177f6ded46b6c2564d6c4e37e", "0x12372b7d5757c26871e202b82a57c12dc45c6bcd8f4d03986b0ac00c1ca30c14"]],["0x21f16692f1d7560b221934076b4d9c504b436ccd9a61bc6ae07fd165157624fa", "0x13c41cd1c18fee688a9bb7b471121717b17bc7cf8d7d5ab5560b3592614a0741"],["0x06c21403ae2da0469f41827322f010fb3bcbdd888f004a70f6b0edb19b96fcd9"])
-// tset = vSender.split(']\(),[');
-// console.log(tmp);
-// console.log();
-// var tset = [];
-// console.log(tset);
-// interactWContract();
+async function interactWContract(){
+    contract.name().then(res => console.log(res));
+    contract.totalSupply().then(res => console.log(ethers.utils.formatUnits(res,0)));
+    // contract.getAddressVerif().then(res => console.log(res))
+    await contract.transferConfidentiel(vSender,vReceiver).then(res => console.log(res));
+}
+
+interactWContract();
