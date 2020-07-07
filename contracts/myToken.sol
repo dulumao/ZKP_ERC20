@@ -1,7 +1,7 @@
-pragma solidity >=0.4.0 <0.7.0;
+pragma solidity ^0.6.0;
+pragma experimental ABIEncoderV2;
 
-
-import "node_modules/openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
+import "./ERC20.sol";
 import "./verifier.sol";
 
 contract myToken is ERC20 {
@@ -12,7 +12,7 @@ contract myToken is ERC20 {
     uint public _INITIAL_SUPPLY = 12000000;
 
     //Mapping des hash des balances au lieu des montants
-    mapping (address => bytes32) balanceHashes;
+    mapping (address => string) balanceHashes;
 
     constructor() public ERC20(_name,_symbol,_decimals){
     _mint(msg.sender, _INITIAL_SUPPLY);
@@ -21,11 +21,15 @@ contract myToken is ERC20 {
 
     // IL FAUT APPELER LES FONCTIONS DU CONTRAT VERIFIER.SOL
     address addressVerifier;
-    function setAddressVerif(address _addressVerif) external {
+    function setAddressVerif(address _addressVerif) public {
         addressVerifier = _addressVerif;
     }
 
-    function callVerifier(uint[2] memory a,uint[2][2] memory b,uint[2] memory c,uint[1] memory input, uint personne) private view returns(bool) {
+    function getAddressVerif() public view returns(address adr){
+        return addressVerifier;
+    }
+
+    function callVerifier(uint[2] memory a,uint[2][2] memory b,uint[2] memory c,uint[3] memory input, uint personne) private view returns(bool) {
         InterfaceVerifier v = InterfaceVerifier(addressVerifier);
         if(personne == 1){
             return v.verifyProofSender(a,b,c,input);
@@ -35,38 +39,35 @@ contract myToken is ERC20 {
         }
     }
 
+    //Déclaration des paramètres pour la fonction callVerifier(a,b,c,input)
+    struct VerifParameters {
+        uint[2] a;
+        uint[2][2] b;
+        uint[2] c;
+        uint[3] input;
+    }
 
-    // function transfer(address _to, bytes32 hashValue, bytes32 hashSenderBalanceAfter, bytes32 hashReceiverBalanceAfter,
-    //     bytes zkProofSender, bytes zkProofReceiver) public
-
-    function transfer(address _to, bytes32 hashValue, bytes32 hashSenderBalanceAfter, bytes32 hashReceiverBalanceAfter,
-        uint[2] memory a,uint[2][2] memory b,uint[2] memory c,uint[1] memory input)
-        public returns(bool r)
+    function getBalanceHash(address _addr) public view returns (string memory){
+        return balanceHashes[_addr];
+    }
+    //  bool senderProofIsCorrect = zksnarkverify(confTxSenderVk, [hashSenderBalanceBefore, hashSenderBalanceAfter, hashValue], zkProofSender);
+    // bool receiverProofIsCorrect = zksnarkverify(confTxReceiverVk, [hashReceiverBalanceBefore, hashReceiverBalanceAfter, hashValue], zkProofReceiver);
+    /*function transferConfidentiel(address _to, bytes32 hashSenderBalanceAfter, bytes32 hashReceiverBalanceAfter,
+        VerifParameters memory vSender, VerifParameters memory vReceiver)*/
+    function transferConfidentiel(address _to, string memory hashSenderBalanceAfter, string memory hashReceiverBalanceAfter,
+        VerifParameters memory vSender, VerifParameters memory vReceiver)
+        public returns(bool val)
     {
-        // bytes32 hashSenderBalanceBefore = balanceHashes[msg.sender];
-        // bytes32 hashReceiverBalanceBefore = balanceHashes[_to];
+        bool senderProofIsCorrect = callVerifier(vSender.a,vSender.b,vSender.c,vSender.input,1);
+        bool receiverProofIsCorrect = callVerifier(vReceiver.a,vReceiver.b,vReceiver.c,vReceiver.input,2);
 
-        bool senderProofIsCorrect = callVerifier(a,b,c,input,1);
-        bool receiverProofIsCorrect = callVerifier(a,b,c,input,2);
-
-        r = false;
-
+        val = false;
         if(senderProofIsCorrect && receiverProofIsCorrect){
             balanceHashes[msg.sender] = hashSenderBalanceAfter;
             balanceHashes[_to] = hashReceiverBalanceAfter;
-
-            r = true;
+            val = true;
         }
-        return r;
+        return val;
     }
 
-
-
 }
-
-
-
-
-
-// METAMASK:
-// sheriff token scene pond roof diet gain ship gossip carbon detail tribe

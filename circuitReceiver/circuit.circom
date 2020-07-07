@@ -4,29 +4,6 @@ include "../circomlib/circuits/bitify.circom"
 include "../circomlib/circuits/mimc.circom"
 include "../circomlib/circuits/comparators.circom"
 
- 
-
-// template CalculSha() {
-//     signal private input in;
-//     signal output out;
-
-//     var numBits = 10;
-//     component inBits = Num2Bits(numBits);
-//     inBits.in <== in;
-
-//     component sha256 = Sha256(numBits);
-//     for (var i=0; i<numBits; i++) {
-//         sha256.in[i] <== inBits.out[i];
-//     }
-
-//     component outNum = Bits2Num(256);
-//     for (var i=0; i<256; i++) {
-//         outNum.in[i] <-- sha256.out[i];
-//     }
-//     out <== outNum.out;
-
-// }
-
 template SenderFunction(){
 
     //Entrees, valeur du transfert et solde de l'envoyeur
