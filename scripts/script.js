@@ -523,11 +523,7 @@ function generatecall(proofName, publicName) {
 
     return(S);
 }
-
-
-// var verifSender  = generatecall("./circuitTset/proof.json","./circuitTset/public.json");
-// var verifReceiver = generatecall("./circuitTsetReceiver/proof.json","./circuitTsetReceiver/public.json");
-
+// met en forme les deux fichiers générés par "generateCall"
 function cleanCalls(vSender, vReceiver){
 	function removeElts(str) {
 		str = str.slice(1);
@@ -567,7 +563,6 @@ function cleanCalls(vSender, vReceiver){
 		}
 	}
 }
-
 // cleanCalls(verifSender,verifReceiver);
 async function setVerifier(){
 	await contract.setAddressVerif(addressVerifier).then(tx => console.log(tx));
@@ -579,26 +574,17 @@ async function interactWContract(){
 	// contract.getAddressVerif().then(res => console.log(res))
     await contract.transferConfidentiel(verifSender,verifReceiver).then(res => console.log(res));
 }
-
 // interactWContract();
 
-bob = "0x96d0B08E918D20B7Cc82729C18bF9934B235cA7e";
-
 // PUBLIC FILES
-var publicJsonReceiver = JSON.parse(fs.readFileSync("./circuitTsetReceiver/public.json","utf-8"));
-var publicJsonSender = JSON.parse(fs.readFileSync("./circuitTset/public.json","utf-8"));
+var publicJsonReceiver = JSON.parse(fs.readFileSync("../circuitTsetReceiver/public.json","utf-8"));
+var publicJsonSender = JSON.parse(fs.readFileSync("../circuitTset/public.json","utf-8"));
 // PROOFS
-var proofSender = JSON.parse(fs.readFileSync("./circuitTset/proof.json"));
-var proofReceiver = JSON.parse(fs.readFileSync("./circuitTsetReceiver/proof.json"));
+var proofSender = JSON.parse(fs.readFileSync("../circuitTset/proof.json"));
+var proofReceiver = JSON.parse(fs.readFileSync("../circuitTsetReceiver/proof.json"));
 
-// hashValue25 = "4736446568872575060005712851072254579580333210376619673682138501339752681384";
-// hashSenderBalanceAfter 
+async function transfer(_to, value){
 
-// , _hashValue, _hashSenderBalanceAfter, _hashReceiverBalanceAfter
-async function transfer(_to, _hashValues){
-
-	// var hashSenderBalanceBefore = contrat.getBalanceHash(wallet.address);
-	// var hashReceiverBalanceBefore = contrat.getBalanceHash(_to);
 	var hashSenderBalanceAfter = publicJsonSender[2];
 	var hashReceiverBalanceAfter = publicJsonReceiver[2];
 	
@@ -610,5 +596,7 @@ async function transfer(_to, _hashValues){
 	await contract.transferConfidentiel(_to, hashSenderBalanceAfter, hashReceiverBalanceAfter,
 		verifSender, verifReceiver).then(res => console.log(res));
 }
+
+bob = "0x96d0B08E918D20B7Cc82729C18bF9934B235cA7e";
 
 transfer(bob, publicJsonSender[1]);
