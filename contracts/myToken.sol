@@ -2,7 +2,7 @@ pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
 import "./ERC20.sol";
-import "./verifierTest.sol";
+import "./verifier.sol";
 
 /** @title myToken  */
 contract myToken is ERC20{
@@ -12,10 +12,9 @@ contract myToken is ERC20{
     uint8 private _decimals = 2;
     uint private _INITIAL_SUPPLY = 12000000;
 
+    /** @dev constructor calling ERC20 constructor*/
     constructor() public ERC20(_name,_symbol,_decimals){
-        
         _mint(msg.sender, _INITIAL_SUPPLY);
-
     }
     
     
