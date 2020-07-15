@@ -4,6 +4,10 @@ const {stringifyBigInts, unstringifyBigInts} = require("ffjavascript").utils;
 const fs = require("fs");
 const { Console } = require("console");
 const { removeListener } = require("process");
+const { createCode } = require("../circomlib/src/mimc_gencontract");
+
+const mimc7 = require("./mimc7.js");
+
 
 
 var provider = ethers.providers.getDefaultProvider("rinkeby");
@@ -465,7 +469,6 @@ var abi = [
 	}
 ];
 
-
 // var addressContractOLD  = '0xcA7977e12e736d4d228B4f33a7e9dAFEcb96A77e';
 // var addressVerifierOLD = "0x4a97BA615e661aC592AF23d6D71706B8e1B97002";
 var addressContract = "0x02135DAeFEb5bB48A04A44b28979c56Dc0Da409C";
@@ -571,19 +574,21 @@ async function setVerifier(){
 async function interactWContract(){
     contract.name().then(res => console.log(res));
 	contract.totalSupply().then(res => console.log(ethers.utils.formatUnits(res,0)));
-	// contract.getAddressVerif().then(res => console.log(res))
-    await contract.transferConfidentiel(verifSender,verifReceiver).then(res => console.log(res));
+	contract.getAddressVerif().then(res => console.log(res));
 }
 // interactWContract();
 
-// PUBLIC FILES
+// PUBLIC FILES [0] = hashBalanceBefore, [1] = hashValue, [2] = hashBalanceAfter
 var publicJsonReceiver = JSON.parse(fs.readFileSync("../circuitTsetReceiver/public.json","utf-8"));
 var publicJsonSender = JSON.parse(fs.readFileSync("../circuitTset/public.json","utf-8"));
+
 // PROOFS
 var proofSender = JSON.parse(fs.readFileSync("../circuitTset/proof.json"));
 var proofReceiver = JSON.parse(fs.readFileSync("../circuitTsetReceiver/proof.json"));
 
 async function transfer(_to, value){
+
+	interactWContract();
 
 	var hashSenderBalanceAfter = publicJsonSender[2];
 	var hashReceiverBalanceAfter = publicJsonReceiver[2];
@@ -591,12 +596,15 @@ async function transfer(_to, value){
 	var verifSender= generatecall(proofSender, publicJsonSender);
 	var verifReceiver= generatecall(proofReceiver, publicJsonReceiver);
 	cleanCalls(verifSender,verifReceiver);
-	// contract.totalSupply().then(res => console.log(ethers.utils.formatUnits(res,0)));
-
 	await contract.transferConfidentiel(_to, hashSenderBalanceAfter, hashReceiverBalanceAfter,
 		verifSender, verifReceiver).then(res => console.log(res));
 }
+var aze = ethers.utils.toUtf8Bytes("12345");
+var bob = "0x96d0B08E918D20B7Cc82729C18bF9934B235cA7e";
+console.log(aze);
+// console.log(publicJsonReceiver[0]);
+// transfer(bob, publicJsonSender[1]);
 
-bob = "0x96d0B08E918D20B7Cc82729C18bF9934B235cA7e";
-
-transfer(bob, publicJsonSender[1]);
+// console.log(createCode("axavreerf", 4));
+// 4736446568872575060005712851072254579580333210376619673682138501339752681384
+// 14888725010095820837160447827232167328280441782200833429707032588101642300709

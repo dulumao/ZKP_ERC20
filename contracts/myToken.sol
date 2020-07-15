@@ -2,23 +2,24 @@ pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
 import "./ERC20.sol";
-import "./verifier.sol";
+import "./verifierTest.sol";
 
-contract myToken is ERC20 {
+contract myToken is ERC20{
+    
+    // using MiMC_hash for uint256[];
 
-    string public _name = "NomDuToken";
-    string public _symbol = "NDT";
-    uint8 public _decimals = 2;
-    uint public _INITIAL_SUPPLY = 12000000;
-
-    //Mapping des hash des balances au lieu des montants
-    mapping (address => string) balanceHashes;
+    string private _name = "NomDuToken";
+    string private _symbol = "NDT";
+    uint8 private _decimals = 2;
+    uint private _INITIAL_SUPPLY = 12000000;
 
     constructor() public ERC20(_name,_symbol,_decimals){
-    _mint(msg.sender, _INITIAL_SUPPLY);
+        
+        _mint(msg.sender, _INITIAL_SUPPLY);
+
     }
-
-
+    
+    
     // IL FAUT APPELER LES FONCTIONS DU CONTRAT VERIFIER.SOL
     address addressVerifier;
     function setAddressVerif(address _addressVerif) public {
@@ -47,14 +48,12 @@ contract myToken is ERC20 {
         uint[3] input;
     }
 
-    function getBalanceHash(address _addr) public view returns (string memory){
+    function getBalanceHash(address _addr) public view returns (bytes32){
         return balanceHashes[_addr];
     }
-    //  bool senderProofIsCorrect = zksnarkverify(confTxSenderVk, [hashSenderBalanceBefore, hashSenderBalanceAfter, hashValue], zkProofSender);
-    // bool receiverProofIsCorrect = zksnarkverify(confTxReceiverVk, [hashReceiverBalanceBefore, hashReceiverBalanceAfter, hashValue], zkProofReceiver);
-    /*function transferConfidentiel(address _to, bytes32 hashSenderBalanceAfter, bytes32 hashReceiverBalanceAfter,
-        VerifParameters memory vSender, VerifParameters memory vReceiver)*/
-    function transferConfidentiel(address _to, string memory hashSenderBalanceAfter, string memory hashReceiverBalanceAfter,
+
+
+    function transferConfidentiel(address _to, bytes32 hashSenderBalanceAfter, bytes32 hashReceiverBalanceAfter,
         VerifParameters memory vSender, VerifParameters memory vReceiver)
         public returns(bool val)
     {
@@ -63,6 +62,7 @@ contract myToken is ERC20 {
 
         val = false;
         if(senderProofIsCorrect && receiverProofIsCorrect){
+            
             balanceHashes[msg.sender] = hashSenderBalanceAfter;
             balanceHashes[_to] = hashReceiverBalanceAfter;
             val = true;
@@ -70,4 +70,10 @@ contract myToken is ERC20 {
         return val;
     }
 
+    
 }
+
+
+
+// METAMASK:
+// sheriff token scene pond roof diet gain ship gossip carbon detail tribe
