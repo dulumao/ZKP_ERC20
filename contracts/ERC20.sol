@@ -11,12 +11,15 @@ import "node_modules/openzeppelin-solidity/contracts/utils/Address.sol";
 import "./mimc7.sol";
 
 
+import "./mimc7.sol";
+
+
 contract ERC20 is Context, IERC20 {
     using SafeMath for uint256;
     using Address for address;
 
     mapping (address => uint256) internal _balances;
-    mapping (address => bytes32) internal balanceHashes;
+    mapping (address => bytes32) internal _balanceHashes;
 
     mapping (address => mapping (address => uint256)) private _allowances;
 
@@ -41,7 +44,11 @@ contract ERC20 is Context, IERC20 {
         _symbol = symbol;
         _decimals = decimals;
     }
-    
+
+    /**
+    @param in_x, array of inputs, inputs should be uint256
+    @param in_k, key used in the algorithm
+    @return uint256, returns the hash of the values contained in in_x */
     function MiMCpe7_mp( uint256[] memory in_x, uint256 in_k )
         internal pure returns (uint256)
     {
@@ -55,6 +62,9 @@ contract ERC20 is Context, IERC20 {
         
         return r;
     }
+    /**
+    @param value to hash
+    @return uint256, mimc hash of value */
     function mimc(uint256 value) public view returns (uint256){
         uint[] memory tmp = new uint[](1);
         tmp[0] = value;
@@ -218,6 +228,10 @@ contract ERC20 is Context, IERC20 {
 
         _balances[sender] = _balances[sender].sub(amount, "ERC20: transfer amount exceeds balance");
         _balances[recipient] = _balances[recipient].add(amount);
+        
+        _balanceHashes[sender] = bytes32(mimc( _balances[sender]));
+        _balanceHashes[recipient] = bytes32(mimc(_balances[recipient]));
+
         emit Transfer(sender, recipient, amount);
     }
 
@@ -237,6 +251,8 @@ contract ERC20 is Context, IERC20 {
 
         _totalSupply = _totalSupply.add(amount);
         _balances[account] = _balances[account].add(amount);
+        
+        _balanceHashes[account] = bytes32(mimc(_balances[account]));
         emit Transfer(address(0), account, amount);
     }
 
@@ -257,6 +273,8 @@ contract ERC20 is Context, IERC20 {
         _beforeTokenTransfer(account, address(0), amount);
 
         _balances[account] = _balances[account].sub(amount, "ERC20: burn amount exceeds balance");
+        
+        _balanceHashes[account] = bytes32(mimc(_balances[account]));
         _totalSupply = _totalSupply.sub(amount);
         emit Transfer(account, address(0), amount);
     }
@@ -309,3 +327,4 @@ contract ERC20 is Context, IERC20 {
      */
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual { }
 }
+

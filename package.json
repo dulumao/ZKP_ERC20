@@ -18,7 +18,7 @@
     "circom": "^0.5.11",
     "ethers": "^5.0.2",
     "openzeppelin-solidity": "3.0.2",
-    "snarkjs": "^0.1.31",
+    "snarkjs": "^0.3.6",
     "web3": "^1.2.9"
   }
 }

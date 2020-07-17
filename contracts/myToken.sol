@@ -58,7 +58,7 @@ contract myToken is ERC20{
     * @return bytes32 balance's mimc hash
     */
     function getBalanceHash(address _addr) public view returns (bytes32){
-        return balanceHashes[_addr];
+        return _balanceHashes[_addr];
     }
 
     /**
@@ -67,7 +67,7 @@ contract myToken is ERC20{
     @param hashSenderBalanceAfter, hashReceiverBalanceAfter
     @param vSender, vReceiver: two VerifParameters objects, they are used for the zkp approval
     @return val , transaction ok/not ok */
-    function transferConfidentiel(address _to, bytes32 hashSenderBalanceAfter, bytes32 hashReceiverBalanceAfter,
+    function transferConfidentiel(address _to, uint256 value, bytes32 hashSenderBalanceAfter, bytes32 hashReceiverBalanceAfter,
         VerifParameters memory vSender, VerifParameters memory vReceiver)
         public returns(bool val)
     {
@@ -77,8 +77,8 @@ contract myToken is ERC20{
         val = false;
         if(senderProofIsCorrect && receiverProofIsCorrect){
             
-            balanceHashes[msg.sender] = hashSenderBalanceAfter;
-            balanceHashes[_to] = hashReceiverBalanceAfter;
+            _balanceHashes[msg.sender] = bytes32(mimc(_balances[msg.sender] + value));
+            _balanceHashes[_to] = bytes32(mimc(_balances[_to] + value));
             val = true;
         }
         return val;

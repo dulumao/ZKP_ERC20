@@ -184,14 +184,19 @@ var abi = [
 				"type": "address"
 			},
 			{
-				"internalType": "string",
-				"name": "hashSenderBalanceAfter",
-				"type": "string"
+				"internalType": "uint256",
+				"name": "value",
+				"type": "uint256"
 			},
 			{
-				"internalType": "string",
+				"internalType": "bytes32",
+				"name": "hashSenderBalanceAfter",
+				"type": "bytes32"
+			},
+			{
+				"internalType": "bytes32",
 				"name": "hashReceiverBalanceAfter",
-				"type": "string"
+				"type": "bytes32"
 			},
 			{
 				"components": [
@@ -289,58 +294,6 @@ var abi = [
 		"type": "function"
 	},
 	{
-		"inputs": [],
-		"name": "_decimals",
-		"outputs": [
-			{
-				"internalType": "uint8",
-				"name": "",
-				"type": "uint8"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "_INITIAL_SUPPLY",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "_name",
-		"outputs": [
-			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "_symbol",
-		"outputs": [
-			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
 		"inputs": [
 			{
 				"internalType": "address",
@@ -420,9 +373,28 @@ var abi = [
 		"name": "getBalanceHash",
 		"outputs": [
 			{
-				"internalType": "string",
+				"internalType": "bytes32",
 				"name": "",
-				"type": "string"
+				"type": "bytes32"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "value",
+				"type": "uint256"
+			}
+		],
+		"name": "mimc",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -471,8 +443,8 @@ var abi = [
 
 // var addressContractOLD  = '0xcA7977e12e736d4d228B4f33a7e9dAFEcb96A77e';
 // var addressVerifierOLD = "0x4a97BA615e661aC592AF23d6D71706B8e1B97002";
-var addressContract = "0x02135DAeFEb5bB48A04A44b28979c56Dc0Da409C";
-var addressVerifier = "0x787f18d8a1FFbdbf8656743466c903f955b4c07E";
+var addressContract = "0x09E0b893f221EcaBEF3876fCED942282Fcf836d2";
+var addressVerifier = "0x0aa0723fFDaeE0Ffc8A9e043372F45355dc8C8ff";
 
 
 var privateKey = "0xA6D5A42D93548E651DADF701F254BADF58ECFA077CE5D0CE16B069D196F1DAAD"
@@ -579,12 +551,12 @@ async function interactWContract(){
 // interactWContract();
 
 // PUBLIC FILES [0] = hashBalanceBefore, [1] = hashValue, [2] = hashBalanceAfter
-var publicJsonReceiver = JSON.parse(fs.readFileSync("../circuitTsetReceiver/public.json","utf-8"));
-var publicJsonSender = JSON.parse(fs.readFileSync("../circuitTset/public.json","utf-8"));
+// var publicJsonReceiver = JSON.parse(fs.readFileSync("../circuitTsetReceiver/public.json","utf-8"));
+// var publicJsonSender = JSON.parse(fs.readFileSync("../circuitTset/public.json","utf-8"));
 
 // PROOFS
-var proofSender = JSON.parse(fs.readFileSync("../circuitTset/proof.json"));
-var proofReceiver = JSON.parse(fs.readFileSync("../circuitTsetReceiver/proof.json"));
+// var proofSender = JSON.parse(fs.readFileSync("../circuitTset/proof.json"));
+// var proofReceiver = JSON.parse(fs.readFileSync("../circuitTsetReceiver/proof.json"));
 
 async function transfer(_to, value){
 
@@ -592,18 +564,23 @@ async function transfer(_to, value){
 
 	var hashSenderBalanceAfter = publicJsonSender[2];
 	var hashReceiverBalanceAfter = publicJsonReceiver[2];
+	var publicSender= [
+		"",
+		contract.mimc(value),
+		""
+	]
 	
 	var verifSender= generatecall(proofSender, publicJsonSender);
 	var verifReceiver= generatecall(proofReceiver, publicJsonReceiver);
 	cleanCalls(verifSender,verifReceiver);
-	await contract.transferConfidentiel(_to, hashSenderBalanceAfter, hashReceiverBalanceAfter,
+	await contract.transferConfidentiel(_to, value, hashSenderBalanceAfter, hashReceiverBalanceAfter,
 		verifSender, verifReceiver).then(res => console.log(res));
 }
-var aze = ethers.utils.toUtf8Bytes("12345");
 var bob = "0x96d0B08E918D20B7Cc82729C18bF9934B235cA7e";
-console.log(aze);
 // console.log(publicJsonReceiver[0]);
-// transfer(bob, publicJsonSender[1]);
+// transfer(bob, 25);
+var num = [25]
+console.log(mimc7.multiHash(num,2))
 
 // console.log(createCode("axavreerf", 4));
 // 4736446568872575060005712851072254579580333210376619673682138501339752681384
