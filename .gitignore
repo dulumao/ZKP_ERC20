@@ -6,6 +6,14 @@
 # build/contract folder
 build/*
 
+circuitSender_v2/*.zkey
+circuitSender_v2/*.json
+
+circuitReceiver_v2/*.zkey
+circuitReceiver_v2/$.json
+
+
+
 ### Linux ###
 *~
 
