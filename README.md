@@ -2,6 +2,21 @@
 
 ## PROGRAMME NON FONCTIONNEL
 
+##### Prérequis:
+
+- git
+
+- node v14
+
+  ```
+  npm install -g circom@latest
+  npm install -g snarkjs@latest
+  ```
+
+Repo of the great library snarkjs: https://github.com/iden3/snarkjs
+
+and circom: https://github.com/iden3/circom
+
 
 
 Le fichier public.json contient:
