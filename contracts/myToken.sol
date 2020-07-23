@@ -61,13 +61,15 @@ contract myToken is ERC20{
         return _balanceHashes[_addr];
     }
 
+
+
     /**
     @dev confidential transaction, there should be an interaction between the two parties
     @param _to, address of the receiver,
-    @param hashSenderBalanceAfter, hashReceiverBalanceAfter
     @param vSender, vReceiver: two VerifParameters objects, they are used for the zkp approval
-    @return val , transaction ok/not ok */
-    function transferConfidentiel(address _to, uint256 value, bytes32 hashSenderBalanceAfter, bytes32 hashReceiverBalanceAfter,
+    @return val , transaction ok/not ok 
+    */
+    function confidentialTransfer(address _to, uint256 value,
         VerifParameters memory vSender, VerifParameters memory vReceiver)
         public returns(bool val)
     {
@@ -77,8 +79,11 @@ contract myToken is ERC20{
         val = false;
         if(senderProofIsCorrect && receiverProofIsCorrect){
             
-            _balanceHashes[msg.sender] = bytes32(mimc(_balances[msg.sender] + value));
+            _balanceHashes[msg.sender] = bytes32(mimc(_balances[msg.sender] - value));
             _balanceHashes[_to] = bytes32(mimc(_balances[_to] + value));
+            
+            _balances[msg.sender] = _balances[msg.sender].sub(value, "ERC20: transfer amount exceeds balance");
+            _balances[_to] = _balances[_to].add(value);            
             val = true;
         }
         return val;
@@ -86,6 +91,3 @@ contract myToken is ERC20{
 
     
 }
-
-// METAMASK:
-// sheriff token scene pond roof diet gain ship gossip carbon detail tribe

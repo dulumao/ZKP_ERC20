@@ -525,15 +525,6 @@ var wallet = new ethers.Wallet(privateKey,provider);
 var contract = new ethers.Contract(addressContract,abi,wallet);
 var verifier = new ethers.Contract(addressVerifier,abiVerifier,wallet)
 
-let overrides = {
-    // The maximum units of gas for the transaction to use
-    gasLimit: 625000
-}
-
-// var vSender = [["0x02063a81fb6c8269ab6175f0cda21da7126186336e4ccb9212bea2a7f91f124f", "0x2738baee46bd09ca0d1a731da5798f8429d0b32f9880553ccad68b7996d1e82a"],[["0x25d4b24ad5306aaabad209f86e59c70ad6f9aa394a2d19dd9bbf0a77b1076f49", "0x1bbd87820d15e15782917bdad10ccf3253562a2a3e064f021ba1526e3697aad0"],["0x025cae085ca5a62dff7101afb55041f5fc83e4d177f6ded46b6c2564d6c4e37e", "0x12372b7d5757c26871e202b82a57c12dc45c6bcd8f4d03986b0ac00c1ca30c14"]],["0x21f16692f1d7560b221934076b4d9c504b436ccd9a61bc6ae07fd165157624fa", "0x13c41cd1c18fee688a9bb7b471121717b17bc7cf8d7d5ab5560b3592614a0741"],["0x06c21403ae2da0469f41827322f010fb3bcbdd888f004a70f6b0edb19b96fcd9"]];
-// var vReceiver = [["0x19f23b4a9bc9aafe551322fd5320b6c7a384c6673e553cfa4d603a9b43568be7", "0x1a4e99262103b15d1f627003e4c9bf154e8b6196579cce7cf8648f949006bbaa"],[["0x118ff885da791ec76bb356300a48dd588e576b635383bc5347ed6108a16e7a5b", "0x001eb5705e337fd797e642aec592fabdc3596262bc9e66f92ab8f6f924e73ae1"],["0x26a0808f13ff0051b6e17a4ec4cf5b6f36756df1382b1eac3ca12af2241e6368", "0x2c3e986dff4f6ac7affb74e373c307b8114a57f0bf4bc8cbec17a3c1fa5986a0"]],["0x05c12562441fbfd1af107073ed1407c6c47e1011a78e65f3cec23c5d6a0f13ff", "0x058fcc192d2a82898a5ed51612dd598de31e6a9c17ab40432bea0feb54e71f11"],["0x03e6c0e50c3b31d9188922b3aad10b033f9fe3c1f183922f8d76d0dbbf488b0d"]];
-
-
 function p256(n) {
     let nstr = n.toString(16);
     while (nstr.length < 64) nstr = "0"+nstr;
@@ -647,12 +638,9 @@ async function getPublicData(value, addressSender, addressReceiver){
 	return [publicSender,publicReceiver];
 }
 
-// PROOFS
-// var proofSender = JSON.parse(fs.readFileSync("../circuitTsetSender_v2/proof.json"));
-
 async function getPrivateData(senderBalanceBefore, valeur)
 {	
-	const { proof, publicSignals } = await snarkjs.groth16.fullProve({senderBalanceBefore: senderBalanceBefore, value: valeur}, "../circuitTsetSender_v2/circuit.wasm", "../circuitTsetSender_v2/circuit_final.zkey");
+	const { proof, publicSignals } = await snarkjs.groth16.fullProve({senderBalanceBefore: senderBalanceBefore, value: valeur}, "../circuitSender_v2/circuit.wasm", "../circuitSender_v2/circuit_final.zkey");
 	return JSON.stringify(proof, null, 1)
 }
 
@@ -663,15 +651,21 @@ async function transfer(_to, value){
 	interactWContract();
 
 	//we can access the sender's private data not the receiver, receiver has to give the proof
-	var senderBalance = await contract.balanceOf(wallet).then(res => res.toNumber());
-	var proofSender = await getPrivateData(senderBalance, value);
-	var proofReceiver = JSON.parse(fs.readFileSync("../circuitTsetReceiver_v2/proof.json"));
+	var senderBalance = await contract.balanceOf(wallet.address).then(res => res.toNumber());
+	console.log("solde", senderBalance);
+	console.log("hash", await contract.mimc(senderBalance).then(res => res.toString()));
+	var proofSender = await getPrivateData(senderBalance, value).then(res => JSON.parse(res));
+	// var proofSender = JSON.parse(fs.readFileSync("../circuitSender_v2/proof.json"));
+
+	var proofReceiver = JSON.parse(fs.readFileSync("../circuitReceiver_v2/proof.json"));
 
 	//public data is available for everybody
 	var tmp = await getPublicData(value, wallet.address, _to);
 	var publicJsonSender = tmp[0];
 	var publicJsonReceiver = tmp[1];
 	
+	console.log(publicJsonSender);
+	console.log(publicJsonReceiver);
 	//Used to call the verifier contract
 	var verifSender= generatecall(proofSender, publicJsonSender);
 	var verifReceiver= generatecall(proofReceiver, publicJsonReceiver);
@@ -680,7 +674,7 @@ async function transfer(_to, value){
 	var hashSenderBalanceAfter = publicJsonSender[2];
 	var hashReceiverBalanceAfter = publicJsonReceiver[2];
 
-	await contract.transferConfidentiel(_to, value, hashSenderBalanceAfter, hashReceiverBalanceAfter,
+	await contract.confidentialTransfer(_to, value,
 		verifSender, verifReceiver).then(res => console.log(res));
 }
 
@@ -706,6 +700,7 @@ var bob = "0x96d0B08E918D20B7Cc82729C18bF9934B235cA7e";
 // 11699975
 // 0x0d0b51d13cf41f90f698449148f7b5734f26f50087d073151b6b7b6f3745b84f
 
-transfer(bob,200000);
-
+transfer(bob,200000).then(() => {
+    process.exit(0);
+});
 // console.log("a", proofReceiver);
