@@ -33,6 +33,21 @@ and circom: https://github.com/iden3/circom
 
 En plus du contrat principal [myToken](https://github.com/AntoineMkr/ZKP_ERC20/blob/master/contracts/myToken.sol), j'ai modifié un peu le code du contrat [ERC20](https://github.com/AntoineMkr/ZKP_ERC20/blob/master/contracts/ERC20.sol) d'OpenZeppelin. J'ai aussi modifié le contrat "verifier.sol" pour qu'il puisse vérifier les preuves du sender et du receiver.
 
+Pour déployer les contrats sur Remix:
+
+- aller dans "file explorer"
+- cliquer sur la petite icone représentant un dossier
+- sélectionner les contrats nécessaires (ERC20 hérite d'autres contrats OpenZeppelin, il faut les ajouter aussi)
+- modifier les liens "import" dans les contrats
+- être Metamask ready avec un peu de faux ethers (https://faucet.rinkeby.io/)
+- sur remix, compiler les contrats
+- aller dans la section deploy&run et sélectionner "injected web" (javascript VM ne fonctionne pas très bien)
+- sélectionner le contrat à déployer et boum "deploy"
+
+Une fois le verifier.sol et myToken déployés, il faut entrer l'address du verifier dans la fonction setAddressVerif() de myToken.
+
+
+
 Le dossier PTAU contient la cérémonie PowersOfTau.
 
 Il devrait noramlement être nécessaire de cloner le répo circomlib: https://github.com/iden3/circomlib. Celui ci contient des cricuits pré-conçus par l'équipe de Circom.
